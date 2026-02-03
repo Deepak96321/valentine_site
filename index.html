@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>💝 Be My Valentine?</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #ff6b9d;
+    --deep-pink: #e91e63;
+    --rose: #f8a4c8;
+    --cream: #fff5f7;
+    --red: #e53935;
+    --soft-white: #fffafa;
+    --shadow: rgba(233, 30, 99, 0.25);
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Floating Hearts BG ── */
+  .hearts-bg {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .heart-float {
+    position: absolute;
+    bottom: -60px;
+    font-size: 1.5rem;
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── Card ── */
+  .card {
+    position: relative;
+    z-index: 1;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 12px 50px var(--shadow);
+    padding: 52px 44px 48px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    animation: cardIn .7s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes cardIn {
+    from { transform: scale(.85) translateY(40px); opacity: 0; }
+    to   { transform: scale(1)   translateY(0);    opacity: 1; }
+  }
+
+  .big-heart {
+    font-size: 3.6rem;
+    display: block;
+    margin-bottom: 12px;
+    animation: heartPulse 1.2s ease-in-out infinite;
+  }
+  @keyframes heartPulse {
+    0%,100% { transform: scale(1); }
+    50%     { transform: scale(1.18); }
+  }
+
+  h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.8rem;
+    color: var(--deep-pink);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .sub {
+    color: #aaa;
+    font-size: .95rem;
+    margin-bottom: 36px;
+    font-weight: 600;
+  }
+
+  /* ── Yes button row ── */
+  .btn-yes-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.25rem;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 38px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px var(--shadow);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .btn-yes {
+    position: relative;
+    background: linear-gradient(135deg, var(--pink), var(--deep-pink));
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .15s;
+  }
+  .btn-yes:hover { transform: scale(1.08); box-shadow: 0 6px 24px var(--shadow); }
+  .btn-yes:active { transform: scale(.95); }
+
+  /* ── No button arena ── */
+  .no-arena {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    margin-top: 4px;
+  }
+
+  .btn-no {
+    position: absolute;
+    background: linear-gradient(135deg, #78909c, #546e7a);
+    /* start centered */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: left .38s cubic-bezier(.68,-0.55,.27,1.55),
+                top  .38s cubic-bezier(.68,-0.55,.27,1.55),
+                transform .18s;
+  }
+  .btn-no:hover { transform: translate(-50%, -50%) scale(1.05); }
+  .btn-no:active { transform: translate(-50%, -50%) scale(.93); }
+  .btn-no.moved {
+    /* once moved we position with raw left/top, no translate needed */
+    transform: none;
+    transition: left .38s cubic-bezier(.68,-0.55,.27,1.55),
+                top  .38s cubic-bezier(.68,-0.55,.27,1.55),
+                transform .18s;
+  }
+  .btn-no.moved:hover { transform: scale(1.05); }
+  .btn-no.moved:active { transform: scale(.93); }
+
+  /* ── Result Panel ── */
+  .result {
+    margin-top: 32px;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .5s, transform .5s;
+    pointer-events: none;
+  }
+  .result.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .result-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.9rem;
+    color: var(--deep-pink);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+  .result-gif {
+    width: 240px;
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 6px 24px var(--shadow);
+    margin: 0 auto;
+    display: block;
+  }
+
+  /* confetti burst */
+  .confetti-container {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    top: -20px;
+    width: 10px; height: 10px;
+    opacity: 0;
+  }
+  .confetti.fall {
+    animation: confettiFall 2s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(1080deg); opacity: 0; }
+  }
+
+  /* ── counter message ── */
+  .no-counter {
+    font-size: .85rem;
+    color: var(--pink);
+    font-weight: 700;
+    margin-top: 14px;
+    min-height: 1.2em;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .no-counter.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- floating hearts bg -->
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- confetti layer -->
+<div class="confetti-container" id="confettiBox"></div>
+
+<!-- main card -->
+<div class="card">
+  <span class="big-heart">💝</span>
+  <h1>Will You Be<br/>My Valentine?</h1>
+  <p class="sub">Think carefully before you answer… 😏</p>
+
+  <div class="btn-yes-wrap">
+    <button class="btn btn-yes" id="btnYes">Yes! 💕</button>
+  </div>
+
+  <div class="no-arena" id="noArena">
+    <button class="btn btn-no" id="btnNo">No</button>
+  </div>
+
+  <p class="no-counter" id="noCounter"></p>
+
+  <div class="result" id="result">
+    <p class="result-text">You have chosen the best choice for you! 🎉💗</p>
+    <!-- funny celebratory gif -->
+    <img class="result-gif"
+         src="https://giphy.com/static/giffiles/8xNfrFUmK8teleq8bq.gif"
+         alt="happy dance celebration gif" />
+  </div>
+</div>
+
+<script>
+(function(){
+  // ── floating hearts ──
+  const heartsBg = document.getElementById('heartsBg');
+  const emojis = ['💕','💗','💖','💘','💝','❤️','🌹','💫'];
+  for(let i=0;i<22;i++){
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = emojis[Math.random()*emojis.length|0];
+    h.style.left = (Math.random()*100)+'%';
+    h.style.animationDuration = (6+Math.random()*8)+'s';
+    h.style.animationDelay   = (Math.random()*6)+'s';
+    h.style.fontSize = (.8+Math.random()*1.8)+'rem';
+    heartsBg.appendChild(h);
+  }
+
+  // ── refs ──
+  const btnNo   = document.getElementById('btnNo');
+  const btnYes  = document.getElementById('btnYes');
+  const arena   = document.getElementById('noArena');
+  const result  = document.getElementById('result');
+  const counter = document.getElementById('noCounter');
+  let noPresses = 0;
+  let lastX = -1, lastY = -1; // track previous position to guarantee movement
+
+  const funnyMessages = [
+    "Are you sure? 👀",
+    "Really though? 😂",
+    "Come on… think again! 😏",
+    "You sure sure? 🙄",
+    "Don't you dare! 😤",
+    "Last chance… 👨‍❤️‍👨",
+    "You're gonna regret this! 😈",
+    "Okay okay… I'll let you… 😢",
+    "Please?? 🥺👀",
+    "FINAL ANSWER? 😱"
+  ];
+
+  /* pick a random (x, y) inside arena that is far enough from (lastX, lastY) */
+  function pickSpot(btnW, btnH, aW, aH){
+    const pad = 8;
+    const maxX = aW  - btnW - pad;
+    const maxY = aH  - btnH - pad;
+    let x, y, attempts = 0;
+    do {
+      x = pad + Math.random() * (maxX - pad);
+      y = pad + Math.random() * (maxY - pad);
+      attempts++;
+    } while( attempts < 30 && (Math.abs(x - lastX) < 60 || Math.abs(y - lastY) < 40) );
+    return { x, y };
+  }
+
+  btnNo.addEventListener('click', function(){
+    noPresses++;
+
+    // funny message
+    counter.textContent = funnyMessages[Math.min(noPresses-1, funnyMessages.length-1)];
+    counter.classList.add('show');
+
+    // measure
+    const aRect = arena.getBoundingClientRect();
+    const bRect = btnNo.getBoundingClientRect();
+    const btnW  = bRect.width;
+    const btnH  = bRect.height;
+    const aW    = aRect.width;
+    const aH    = aRect.height;
+
+    // on first click: convert from the centred translate position to raw left/top
+    if(!btnNo.classList.contains('moved')){
+      // current top-left inside arena
+      const curX = bRect.left - aRect.left;
+      const curY = bRect.top  - aRect.top;
+      btnNo.style.left = curX + 'px';
+      btnNo.style.top  = curY + 'px';
+      // disable transition for this single snap, then re-enable
+      btnNo.style.transition = 'none';
+      btnNo.classList.add('moved');
+      lastX = curX;
+      lastY = curY;
+      // force layout flush
+      void btnNo.offsetHeight;
+      btnNo.style.transition = '';
+    }
+
+    // pick new spot
+    const spot = pickSpot(btnW, btnH, aW, aH);
+
+    // tiny shake before jumping
+    btnNo.style.transform = 'rotate(12deg) scale(1.12)';
+    setTimeout(()=>{
+      btnNo.style.transform = 'rotate('+(Math.random()*16-8)+'deg)';
+      btnNo.style.left = spot.x + 'px';
+      btnNo.style.top  = spot.y + 'px';
+      lastX = spot.x;
+      lastY = spot.y;
+    }, 140);
+
+    // grow Yes button a little each time
+    const scale = 1 + noPresses * 0.05;
+    btnYes.style.transform = 'scale('+Math.min(scale, 1.7)+')';
+  });
+
+  // ── Yes button ──
+  btnYes.addEventListener('click', function(){
+    btnNo.style.display  = 'none';
+    btnYes.style.display = 'none';
+    result.classList.add('show');
+    fireConfetti();
+  });
+
+  // ── Confetti ──
+  function fireConfetti(){
+    const box = document.getElementById('confettiBox');
+    const colors = ['#ff6b9d','#e91e63','#ff4081','#ffd600','#ff1744','#00e676','#7c4dff','#ff6f00'];
+    for(let i=0;i<70;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = (Math.random()*100)+'%';
+      c.style.background = colors[Math.random()*colors.length|0];
+      c.style.width  = (6+Math.random()*8)+'px';
+      c.style.height = (6+Math.random()*8)+'px';
+      c.style.borderRadius = Math.random()>0.5?'50%':'3px';
+      c.style.animationDelay    = (Math.random()*.4)+'s';
+      c.style.animationDuration = (1.4+Math.random()*.8)+'s';
+      box.appendChild(c);
+      setTimeout(()=>{ c.classList.add('fall'); }, 20);
+    }
+  }
+})();
+</script>
+</body>
+</html>

@@ -81,7 +81,7 @@
 
   h1 {
     font-family: 'Dancing Script', cursive;
-    font-size: 2.8rem;
+    font-size: 2.2rem;
     color: var(--deep-pink);
     line-height: 1.2;
     margin-bottom: 8px;
@@ -94,11 +94,19 @@
   }
 
   /* ── Yes button row ── */
-  .btn-yes-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
+  /*.btn-yes-wrap {*/
+  /*  display: flex;*/
+  /*  justify-content: center;*/
+  /*  margin-bottom: 12px;*/
+  /*}*/
+
+.btn-yes-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 
   .btn {
     font-family: 'Fredoka One', cursive;
@@ -153,18 +161,32 @@
   .btn-no.moved:active { transform: scale(.93); }
 
   /* ── Result Panel ── */
+  /*.result {*/
+  /*  margin-top: 32px;*/
+  /*  opacity: 0;*/
+  /*  transform: translateY(18px);*/
+  /*  transition: opacity .5s, transform .5s;*/
+  /*  pointer-events: none;*/
+  /*}*/
   .result {
-    margin-top: 32px;
+  display: none;
+  margin-top: 12px;
+  transform: translateY(18px);
+}
+.result.show {
+  display: block;
+  animation: resultIn .5s ease forwards;
+}
+@keyframes resultIn {
+  from {
     opacity: 0;
     transform: translateY(18px);
-    transition: opacity .5s, transform .5s;
-    pointer-events: none;
   }
-  .result.show {
+  to {
     opacity: 1;
     transform: translateY(0);
-    pointer-events: auto;
   }
+}
   .result-text {
     font-family: 'Dancing Script', cursive;
     font-size: 1.9rem;
@@ -226,26 +248,38 @@
 <!-- main card -->
 <div class="card">
   <span class="big-heart">💝</span>
-  <h1>Will You Be<br/>My Valentine?</h1>
-  <p class="sub">Think carefully before you answer… 😏</p>
+<div id="question">
+  <h1>Will You Be My Valentine<br/>and Hold My Hand Forever? 💝🤝❤️</h1>
 
-  <div class="btn-yes-wrap">
-    <button class="btn btn-yes" id="btnYes">Yes! 💕</button>
+  <!--<p class="sub">Think carefully before you answer… 😏</p>-->
+</div>
+
+<div class="btn-yes-wrap" id="yesContainer">
+  <button class="btn btn-yes" id="btnYes">Yes! 💕</button>
+
+  <div class="result" id="result">
+    <!--<p class="result-text">You have chosen the best choice for you! 🎉💗</p>-->
+    <p class="result-text">Yay! You have chosen the best choice and just made my heart flutter! 🎉💗💖🥰</p>
+
+    <img class="result-gif"
+         src="https://media1.tenor.com/m/0Sh7u1lRsyEAAAAd/wedding-crasher-hro.gif">
   </div>
+</div>
+
 
   <div class="no-arena" id="noArena">
     <button class="btn btn-no" id="btnNo">No</button>
   </div>
 
-  <!-- <p class="no-counter" id="noCounter"></p> -->
+  <p class="no-counter" id="noCounter" style="display:none"></p>
 
-  <div class="result" id="result">
-    <p class="result-text">You have chosen the best choice for you! 🎉💗</p>
+  <!--<div class="result" id="result">-->
+  <!--  <p class="result-text">You have chosen the best choice for you! 🎉💗</p>-->
     <!-- funny celebratory gif -->
-    <img class="result-gif"
-         src="https://media1.tenor.com/m/0Sh7u1lRsyEAAAAd/wedding-crasher-hro.gif"
-         <!-- alt="happy dance celebration gif" /> -->
-  </div>
+  <!--  <img class="result-gif"-->
+  <!--       src="https://giphy.com/static/giffiles/8xNfrFUmK8teleq8bq.gif"-->
+  <!--       alt="happy dance celebration gif" />-->
+  <!--</div>-->
 </div>
 
 <script>
@@ -351,12 +385,22 @@
   });
 
   // ── Yes button ──
-  btnYes.addEventListener('click', function(){
-    btnNo.style.display  = 'none';
-    btnYes.style.display = 'none';
-    result.classList.add('show');
-    fireConfetti();
-  });
+  // btnYes.addEventListener('click', function(){
+  //   btnNo.style.display  = 'none';
+  //   btnYes.style.display = 'none';
+  //   result.classList.add('show');
+  //   fireConfetti();
+  // });
+
+btnYes.addEventListener('click', function(){
+  btnNo.style.display = 'none';
+  btnYes.style.display = 'none';
+  question.style.display = 'none';   // 👈 hide title + subtitle
+  result.classList.add('show');
+  fireConfetti();
+});
+
+
 
   // ── Confetti ──
   function fireConfetti(){
@@ -376,9 +420,10 @@
       setTimeout(()=>{ c.classList.add('fall'); }, 20);
     }
   }
+  
+  const question = document.getElementById('question');
+
 })();
 </script>
 </body>
-
 </html>
-
